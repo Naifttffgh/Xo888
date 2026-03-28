@@ -1,7 +1,7 @@
 body {
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Arial', sans-serif;
+    background: #0f0f0f;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,57 +10,52 @@ body {
 }
 
 #loading-screen, #game-lobby, #game-screen {
-    background: #1e1e1e;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 15px;
+    width: 350px;
     text-align: center;
-    width: 320px;
+    box-shadow: 0 0 20px rgba(0,255,150,0.1);
 }
 
-.header-info {
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-}
+.header { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+.my-info { font-size: 0.9em; color: #aaa; margin-top: 5px; }
 
-#my-id-display { color: #00d4ff; font-family: monospace; }
-
-.leaderboard ul { list-style: none; padding: 0; }
-.leaderboard li {
-    background: #2a2a2a;
-    margin: 8px 0;
-    padding: 12px;
+#players-list { list-style: none; padding: 0; margin: 0; }
+#players-list li {
+    background: #252525;
+    margin-bottom: 10px;
+    padding: 15px;
     border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 4px solid #007bff;
+    border-right: 4px solid #00ff88;
+}
+
+button {
+    background: #00ff88;
+    color: black;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 10px;
     margin: 20px 0;
 }
 
 .cell {
     aspect-ratio: 1/1;
     background: #333;
-    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
-    cursor: pointer;
-}
-
-button {
-    background: #007bff;
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+    font-size: 2em;
+    border-radius: 8px;
 }
