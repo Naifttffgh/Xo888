@@ -1,9 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- بيانات Firebase (استبدلها ببياناتك) ---
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "AIzaSy...", // كودك هنا
   authDomain: "xo888.firebaseapp.com",
   projectId: "xo888",
   storageBucket: "xo888.appspot.com",
@@ -14,92 +13,69 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let myPlayerId = "";
+let myId = "";
 
-// دالة لتوليد معرف عشوائي فريد
-function generateShortId() {
-    return 'ID-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-}
-
-// الدالة الأساسية لبدء الموقع
-async function startApp() {
-    // 1. محاولة جلب الـ ID من الكاش (LocalStorage)
-    let savedId = localStorage.getItem('player_unique_id');
+async function start() {
+    // جلب الـ ID من الكاش
+    let savedId = localStorage.getItem('player_id');
 
     if (!savedId) {
-        // إذا كان لاعباً جديداً (أول مرة يفتح الموقع)
-        savedId = generateShortId();
-        localStorage.setItem('player_unique_id', savedId);
-
-        let userName = prompt("أهلاً بك! اختر اسماً يظهر للآخرين:");
-        if (!userName) userName = "لاعب مجهول";
+        // إذا أول مرة يدخل
+        savedId = 'User-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        localStorage.setItem('player_id', savedId);
+        
+        let name = prompt("مرحباً! اختر اسمك المستعار:");
+        if (!name) name = "لاعب " + savedId;
 
         await setDoc(doc(db, 'users', savedId), {
             id: savedId,
-            username: userName,
-            wins: 0,
-            status: 'online'
+            username: name,
+            status: 'online',
+            wins: 0
         });
     } else {
-        // إذا كان لاعباً قديماً، نحدث حالته فقط ليكون Online
-        const userRef = doc(db, 'users', savedId);
-        const snap = await getDoc(userRef);
-        if (snap.exists()) {
-            await updateDoc(userRef, { status: 'online' });
-        } else {
-            // في حال تم مسح البيانات من Firebase، نصفر الكاش ونبدأ من جديد
-            localStorage.clear();
-            return startApp();
-        }
+        // تحديث الحالة لـ Online
+        await updateDoc(doc(db, 'users', savedId), { status: 'online' });
     }
 
-    myPlayerId = savedId;
-    loadLobby();
+    myId = savedId;
+    showLobby();
 }
 
-// عرض شاشة الانتظار وقائمة اللاعبين
-async function loadLobby() {
-    const userSnap = await getDoc(doc(db, 'users', myPlayerId));
-    const userData = userSnap.data();
-
-    document.getElementById('my-name-display').innerText = userData.username;
-    document.getElementById('my-id-display').innerText = myPlayerId;
+async function showLobby() {
+    const snap = await getDoc(doc(db, 'users', myId));
+    document.getElementById('my-name-display').innerText = snap.data().username;
+    document.getElementById('my-id-display').innerText = myId;
     
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('game-lobby').style.display = 'block';
 
-    listenToPlayers();
-}
-
-// مراقبة اللاعبين الآخرين وتحديث القائمة فوراً
-function listenToPlayers() {
-    const q = query(collection(db, 'users'), limit(15));
+    // مراقبة اللاعبين الأونلاين فقط
+    const q = query(collection(db, 'users'), where('status', '==', 'online'), limit(10));
     onSnapshot(q, (snapshot) => {
         const list = document.getElementById('players-list');
         list.innerHTML = "";
         
         snapshot.forEach(docSnap => {
             const player = docSnap.data();
-            if (player.id === myPlayerId) return; // لا تظهر اسمك في قائمة التحدي
-            
+            if (player.id === myId) return; // لا تظهر نفسك
+
             const li = document.createElement('li');
             li.innerHTML = `
-                <div>
+                <div style="text-align:right">
                     <b>${player.username}</b><br>
-                    <small style="color:gray">${player.id}</small>
+                    <small>🏆 ${player.wins} فوز</small>
                 </div>
-                <button onclick="challenge('${player.id}')">تحدي</button>
+                <button onclick="challenge('${player.id}')">تحدي ⚔️</button>
             `;
             list.appendChild(li);
         });
     });
 }
 
-// ربط الدالة بـ window لتكون قابلة للاستدعاء من HTML
-window.challenge = (id) => {
-    alert("جاري إرسال طلب تحدي إلى: " + id);
-    // هنا نضع كود بدء المباراة الفعلي مستقبلاً
+window.challenge = (targetId) => {
+    alert("تم إرسال طلب تحدي إلى " + targetId + "\n(انتظر تفعيل كود المباراة في التحديث القادم!)");
 };
 
-// تشغيل التطبيق فور التحميل
-startApp();
+// تشغيل
+start();
