@@ -1,8 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, orderBy, limit, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// --- بيانات Firebase (استبدلها ببياناتك) ---
 const firebaseConfig = {
-  apiKey: "AIzaSy...", // استبدلها بمفتاحك
+  apiKey: "AIzaSy...",
   authDomain: "xo888.firebaseapp.com",
   projectId: "xo888",
   storageBucket: "xo888.appspot.com",
@@ -13,68 +14,92 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let myName = "";
-let currentGameId = null;
+let myPlayerId = "";
 
-// --- نظام الدخول والحماية ---
-window.login = async () => {
-    const input = document.getElementById('username-input').value.trim();
-    if (!input) return alert("اكتب اسمك أولاً!");
+// دالة لتوليد معرف عشوائي فريد
+function generateShortId() {
+    return 'ID-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+}
 
-    const userRef = doc(db, 'users', input);
-    const snap = await getDoc(userRef);
+// الدالة الأساسية لبدء الموقع
+async function startApp() {
+    // 1. محاولة جلب الـ ID من الكاش (LocalStorage)
+    let savedId = localStorage.getItem('player_unique_id');
 
-    if (snap.exists() && snap.data().status === 'banned') {
-        alert("Nice try, Scammer! 🚫 حسابك محظور.");
-        return;
-    }
+    if (!savedId) {
+        // إذا كان لاعباً جديداً (أول مرة يفتح الموقع)
+        savedId = generateShortId();
+        localStorage.setItem('player_unique_id', savedId);
 
-    if (!snap.exists()) {
-        await setDoc(userRef, { username: input, wins: 0, status: 'online' });
+        let userName = prompt("أهلاً بك! اختر اسماً يظهر للآخرين:");
+        if (!userName) userName = "لاعب مجهول";
+
+        await setDoc(doc(db, 'users', savedId), {
+            id: savedId,
+            username: userName,
+            wins: 0,
+            status: 'online'
+        });
     } else {
-        await updateDoc(userRef, { status: 'online' });
+        // إذا كان لاعباً قديماً، نحدث حالته فقط ليكون Online
+        const userRef = doc(db, 'users', savedId);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+            await updateDoc(userRef, { status: 'online' });
+        } else {
+            // في حال تم مسح البيانات من Firebase، نصفر الكاش ونبدأ من جديد
+            localStorage.clear();
+            return startApp();
+        }
     }
 
-    myName = input;
-    document.getElementById('my-name-display').innerText = myName;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('game-lobby').style.display = 'block';
-    listenToPlayers();
-};
+    myPlayerId = savedId;
+    loadLobby();
+}
 
-// --- مراقبة اللاعبين وقائمة المتصدرين ---
+// عرض شاشة الانتظار وقائمة اللاعبين
+async function loadLobby() {
+    const userSnap = await getDoc(doc(db, 'users', myPlayerId));
+    const userData = userSnap.data();
+
+    document.getElementById('my-name-display').innerText = userData.username;
+    document.getElementById('my-id-display').innerText = myPlayerId;
+    
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('game-lobby').style.display = 'block';
+
+    listenToPlayers();
+}
+
+// مراقبة اللاعبين الآخرين وتحديث القائمة فوراً
 function listenToPlayers() {
-    const q = query(collection(db, 'users'), orderBy('wins', 'desc'), limit(10));
+    const q = query(collection(db, 'users'), limit(15));
     onSnapshot(q, (snapshot) => {
         const list = document.getElementById('players-list');
         list.innerHTML = "";
-        snapshot.forEach(doc => {
-            const user = doc.data();
-            if (user.status === 'banned') return;
+        
+        snapshot.forEach(docSnap => {
+            const player = docSnap.data();
+            if (player.id === myPlayerId) return; // لا تظهر اسمك في قائمة التحدي
             
             const li = document.createElement('li');
             li.innerHTML = `
-                <span>${user.username} (🏆 ${user.wins})</span>
-                ${user.username !== myName ? `<button onclick="challenge('${user.username}')">تحدي</button>` : ''}
+                <div>
+                    <b>${player.username}</b><br>
+                    <small style="color:gray">${player.id}</small>
+                </div>
+                <button onclick="challenge('${player.id}')">تحدي</button>
             `;
             list.appendChild(li);
         });
     });
 }
 
-// --- نظام الباند التلقائي عند الفوز الزائد ---
-async function handleWin(winnerName) {
-    const userRef = doc(db, 'users', winnerName);
-    const snap = await getDoc(userRef);
-    const currentWins = snap.data().wins || 0;
+// ربط الدالة بـ window لتكون قابلة للاستدعاء من HTML
+window.challenge = (id) => {
+    alert("جاري إرسال طلب تحدي إلى: " + id);
+    // هنا نضع كود بدء المباراة الفعلي مستقبلاً
+};
 
-    if (currentWins >= 999) {
-        await updateDoc(userRef, { status: 'banned', wins: 1000 });
-        alert("تم حظرك لتجاوز الحد المسموح للفوز! 💀");
-        location.reload();
-    } else {
-        await updateDoc(userRef, { wins: increment(1) });
-    }
-}
-
-// أضف دوال التحدي (challenge) واللعب هنا بنفس المنطق السابق...
+// تشغيل التطبيق فور التحميل
+startApp();
