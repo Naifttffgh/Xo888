@@ -1,7 +1,7 @@
 body {
-    background-color: #1a1a1a;
-    color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,62 +9,58 @@ body {
     margin: 0;
 }
 
-#auth-screen, #game-lobby, #game-screen {
-    background: #2d2d2d;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+#loading-screen, #game-lobby, #game-screen {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     text-align: center;
-    min-width: 300px;
+    width: 320px;
 }
 
-input {
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    margin-bottom: 10px;
-    width: 80%;
+.header-info {
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+#my-id-display { color: #00d4ff; font-family: monospace; }
+
+.leaderboard ul { list-style: none; padding: 0; }
+.leaderboard li {
+    background: #2a2a2a;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #007bff;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.cell {
+    aspect-ratio: 1/1;
+    background: #333;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    cursor: pointer;
 }
 
 button {
     background: #007bff;
-    color: white;
     border: none;
-    padding: 10px 20px;
+    color: white;
+    padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover { background: #0056b3; }
-
-.board {
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-gap: 10px;
-    margin-top: 20px;
-}
-
-.cell {
-    width: 100px;
-    height: 100px;
-    background: #3d3d3d;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2em;
-    cursor: pointer;
-    border-radius: 10px;
-}
-
-.cell:hover { background: #4d4d4d; }
-
-.leaderboard ul { list-style: none; padding: 0; }
-.leaderboard li {
-    background: #3d3d3d;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
 }
