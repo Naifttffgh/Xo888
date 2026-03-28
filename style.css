@@ -1,0 +1,51 @@
+body {
+    background: #121212;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.status-bar {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #00ff88;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 10px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    cursor: pointer;
+    border-radius: 12px;
+    border: 2px solid #333;
+}
+
+.cell:hover {
+    border-color: #00ff88;
+}
+
+.reset-btn {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
