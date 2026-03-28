@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XO سريع</title>
-    <link rel="stylesheet" href="style.css">
+    <title>XO Public - المباشر</title>
+    <style>
+        body { background: #0f0f0f; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .status { font-size: 1.5em; margin-bottom: 20px; color: #00ff88; font-weight: bold; }
+        .board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; }
+        .cell { width: 100px; height: 100px; background: #1e1e1e; display: flex; justify-content: center; align-items: center; font-size: 3em; cursor: pointer; border-radius: 12px; border: 2px solid #333; transition: 0.2s; }
+        .cell:hover { background: #252525; border-color: #00ff88; }
+        .reset-btn { margin-top: 30px; padding: 12px 25px; background: #ff3b3b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .reset-btn:hover { background: #d32f2f; }
+    </style>
 </head>
 <body>
 
-    <div class="status-bar" id="status">جاهز للعب 🎮</div>
+    <div class="status" id="status">جاري الاتصال بالسيرفر...</div>
 
-    <div class="board" id="main-board">
-        <div class="cell" onclick="makeMove(0)" id="c0"></div>
-        <div class="cell" onclick="makeMove(1)" id="c1"></div>
-        <div class="cell" onclick="makeMove(2)" id="c2"></div>
-        <div class="cell" onclick="makeMove(3)" id="c3"></div>
-        <div class="cell" onclick="makeMove(4)" id="c4"></div>
-        <div class="cell" onclick="makeMove(5)" id="c5"></div>
-        <div class="cell" onclick="makeMove(6)" id="c6"></div>
-        <div class="cell" onclick="makeMove(7)" id="c7"></div>
-        <div class="cell" onclick="makeMove(8)" id="c8"></div>
+    <div class="board">
+        <div class="cell" id="c0"></div>
+        <div class="cell" id="c1"></div>
+        <div class="cell" id="c2"></div>
+        <div class="cell" id="c3"></div>
+        <div class="cell" id="c4"></div>
+        <div class="cell" id="c5"></div>
+        <div class="cell" id="c6"></div>
+        <div class="cell" id="c7"></div>
+        <div class="cell" id="c8"></div>
     </div>
 
-    <button class="reset-btn" onclick="reset()">إعادة اللعب 🔄</button>
+    <button class="reset-btn" id="reset-btn">تصفير اللعبة 🔄</button>
 
     <script type="module" src="script.js"></script>
 </body>
 </html>
-
