@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جيش البطاطس 🥔</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loginPage" class="full-screen">
+        <div class="login-box">
+            <h2>بوابة جيش البطاطس 🛡️</h2>
+            <p>أدخل الكود السري للدخول للمخزن 🙃</p>
+            <input type="password" id="passwordInput" placeholder="الباسورد بالمسافات... 🔑">
+            <button id="loginBtn">دخول</button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="container" style="display: none;">
+        <h1>مخزن الفيديوهات السري 📹</h1>
+        <div id="videoGrid" class="video-grid"></div>
+        
+        <button class="fab" id="openAdminBtn">+</button>
+
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <h3>إضافة فيديو جديد 🥔</h3>
+            <input type="text" id="videoUrlInput" placeholder="رابط الفيديو .mp4">
+            <button id="addVideoBtn">إضافة للمحرقة 🔥</button>
+            <button id="closeAdminBtn" style="background: #444; margin-top: 10px;">إغلاق</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
